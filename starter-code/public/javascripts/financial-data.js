@@ -1,20 +1,23 @@
-const getStockData = (from, to, currency = "USD") => {
-  let http;
+const getStockData = (from, to, currency = "EUR") => {
+  let http = "";
   if (from && to) {
-    http = `https://api.coindesk.com/v1/bpi/historical/close.json?start=${from}&end=${to}`;
+    http = `http://api.coindesk.com/v1/bpi/historical/close.json?start=${from}&end=${to}&currency=${currency}`;
   } else {
-    http = `http://api.coindesk.com/v1/bpi/historical/close.json`;
+    http = `http://api.coindesk.com/v1/bpi/historical/close.json?currency=${currency}`;
   }
-  http += `?currency=${currency}`;
 
   axios
     .get(http)
-    .then(response => {
+    .then((response) => {
       const responseKeys = Object.keys(response.data.bpi);
       const responseValues = Object.values(response.data.bpi);
+
+      document.getElementById("max").innerText = Math.max(...responseValues);
+      document.getElementById("min").innerText = Math.min(...responseValues);
+
       drawCanvas(responseKeys, responseValues);
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
     });
 };
@@ -29,10 +32,10 @@ const drawCanvas = (labels, data) => {
         {
           backgroundColor: "rgba(54, 162, 235, 0.2)",
           label: "Stocks chart",
-          data: data
-        }
-      ]
-    }
+          data: data,
+        },
+      ],
+    },
   });
 };
 
@@ -48,12 +51,12 @@ const callEverything = () => {
 };
 
 const select = document.querySelectorAll("select");
-select.forEach(input => {
-  input.addEventListener("change", callEverything);
+select.forEach((selec) => {
+  selec.addEventListener("change", callEverything);
 });
 
 const inputs = document.querySelectorAll("input");
-inputs.forEach(input => {
+inputs.forEach((input) => {
   input.addEventListener("change", callEverything);
 });
 
